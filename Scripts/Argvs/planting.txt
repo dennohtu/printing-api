@@ -1,0 +1,1 @@
+C:\Program Files\nodejs\node.exe,C:\Users\USER\Documents\THORIUM\Thorium_Backend\Scripts\__prrc.js,Planting,plantingDay,d,seedType,s,quantityPlanted,n,sizeOfLand,s,harvestDate,d,location,s,PlantedBy,s,PlantNotes,-fk,Farm

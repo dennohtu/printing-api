@@ -1,0 +1,13 @@
+MONGO_URI=mongodb+srv://admin:rL7ZbSAdJFnZePjs@thoriumcluster.ibctv.mongodb.net/Backend?retryWrites=true&w=majority
+NODE_ENV=development
+PORT=5000
+JWT_SECRET=@w8h;Z#'b%.{Z6~V
+AFRICASTALKING_API=dbc8bf0865e7aa8ca8d60e0b78bea61f6f71deb0f75840cb5833710edb09223e
+
+AFRICASTALKING_SMSUSERNAME=thorium
+AFRICASTALKING_SMSFROM=
+SERVER_IP=localhost:11211
+MEMCACHIER_SERVERS:localhost:11211
+MINUTES_MEMCACHE=10
+DEFAULT_USER=customer
+FARM_EMPLOYEE=farm_employee

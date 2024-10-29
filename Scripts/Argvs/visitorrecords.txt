@@ -1,0 +1,1 @@
+C:\Program Files\nodejs\node.exe,C:\Users\USER\Documents\THORIUM\Thorium_Backend\Scripts\__prrc.js,VisitorRecords,visitorName,s,visitingDate,d,segmentToVisit,ffSegments,durationOfVisit,n,-fk,Farm

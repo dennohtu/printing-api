@@ -1,0 +1,1 @@
+C:\Program Files\nodejs\node.exe,C:\Users\USER\Documents\THORIUM\Thorium_Backend\Scripts\__prrc.js,sendEmails,User_Email,s,Email_Subject,s,Email_Body,s

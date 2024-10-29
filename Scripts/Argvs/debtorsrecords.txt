@@ -1,0 +1,1 @@
+C:\Program Files\nodejs\node.exe,C:\Users\USER\Documents\THORIUM\Thorium_Backend\Scripts\__prrc.js,DebtorsRecords,debtorName,s,itemSold,s,qtySold,n,sellingPrice,s,Total,s,amountPaid,s,balance,s,date,d,-fk,Farm

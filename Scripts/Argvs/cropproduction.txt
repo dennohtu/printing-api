@@ -1,0 +1,1 @@
+C:\Program Files\nodejs\node.exe,C:\Users\Wamaitha\Documents\Thorium_Backend\Scripts\tests.js,CropProduction,dateHarvested,d,productionDaily,s,productionWeekly,s,productionMonthly,s,-fk,Crop

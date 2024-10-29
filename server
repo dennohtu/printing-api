@@ -1,0 +1,3 @@
+sudo chmod 777 Thorium_Backend/
+sudo chown developer Thorium_Backend/
+scp .env developer@18.215.147.238:/var/www/html/Thorium_Backend

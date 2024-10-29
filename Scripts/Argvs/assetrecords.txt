@@ -1,0 +1,1 @@
+C:\Program Files\nodejs\node.exe,C:\Users\USER\Documents\THORIUM\Thorium_Backend\Scripts\__prrc.js,AssetRecords,assetType,s,dateOfPurchase,s,cost,s,model,s,serialNumber,s,usage,s,-fk,Farm

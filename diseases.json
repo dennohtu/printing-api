@@ -1,0 +1,22 @@
+{
+  "Category": "Plants",
+  "SubCategory": "Fruits",
+  "Type": "Avocado",
+  "Name": "Anthracnose (Colletotrichum gloeosporioides)",
+  "Description": "When fruit reaches maturity, this fungal disease is mostly a post-harvest issue.\nThe fungus infects the fruit while it is still immature and remains latent until the fruit ripens.\nThe illness appears as depressed patches on the fruit, which develop into rot that can penetrate deep into the flesh.\nThe patches may be coated with a slimy, salmon pink fungal spore mass in damp weather.\nIf the conditions in storage are damp and warm, the disease can spread quickly.\nOn twigs, rotting fallen fruits, and dead or dying infected leaves, the anthracnose fungus thrives saprophytically.\nWater splashes propagate the fungus.",
+  "Causes": "Dead branches and twigs harbor the fungus,and should be removed as soon as possible.\nMay also be caused by rotting fruits that have fallen to the ground.\nSome Copper-based fungicides which should be used before blooming, during fruit formation, and after harvest.",
+  "Prevention": "Choose resistant plant varieties when possible and use western grown seeds which have not been exposed to the disease. \nIf this fungal problem is common, do NOT save your own seed for planting.\nTo avoid spreading the disease, keep out of gardens when plants are wet and make sure to disinfect all garden tools (one part bleach to 4 parts water) after use.\nDo not compost infected leaves, fruit or stems and thoroughly clean up garden areas in the fall, after harvest, to reduce sites for the fungal spores.",
+  "Treatment": "Safely treat most fungal and bacterial diseases with SERENADE Garden.\nThis broad spectrum bio-fungicide uses a patented strain of Bacillus subtilis that is registered for organic use. \nBest of all, SERENADE is completely non-toxic to honey bees and beneficial insects.\nLiquid copper sprays and sulfur powders should be applied weekly, starting when foliage begins to develop in the early spring and continuing throughout the growing season. \nSpray early in the day, and avoid applications during hot weather. \nSeeds may also be treated prior to planting.\nNeem oil spray is an organic, multi-purpose fungicide/insecticide/miticide that kills eggs, larvae and adult stages of insects as well as prevents fungal attack on plants. \nApply early, at the first sign of spring budding, every 7-14 days as a preventative measure or on a 7-day schedule until existing problems are eliminated.",
+  "Products":[
+    "Serenade Garden",
+    " Neem Oil – RTU",
+    "Liquid Copper Spray",
+    " Garden Dust (Bonide)"
+  ],
+  "Resource links": [
+    "https://www.plantwise.org/KnowledgeBank/pmdg/20157800755",
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5848113/#:~:text=Anthracnose%20disease%20of%20avocado%20contributes,regions%20where%20avocado%20is%20grown.",
+    "https://www.planetnatural.com/pest-problem-solver/plant-disease/anthracnose/"
+  ]
+
+}

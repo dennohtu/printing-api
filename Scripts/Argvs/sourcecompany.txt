@@ -1,0 +1,1 @@
+C:\Program Files\nodejs\node.exe,C:\Users\Wamaitha\Documents\Thorium_Backend\Scripts\__prrc.js,sourceCompany,-s,seedType,-s,manufactureDate,-d,expiryDate,-d,quantity,-n,seedProductionPerAcre,-s,fk,Farm

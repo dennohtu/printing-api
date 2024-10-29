@@ -1,0 +1,1 @@
+C:\Program Files\nodejs\node.exe,C:\Users\Wamaitha\Documents\Thorium_Backend\Scripts\tests.js,Irrigation,Crop,ffCrops,Quest,af,Section,s,Quantity,s,Price,a,Date,d,-fk,Farm

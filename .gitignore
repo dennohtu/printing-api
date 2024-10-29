@@ -1,0 +1,10 @@
+.idea
+
+node_modules
+ERD
+
+Scripts/__prrc.js
+Scripts/*.json
+Scripts/tests.js
+uploads
+.env

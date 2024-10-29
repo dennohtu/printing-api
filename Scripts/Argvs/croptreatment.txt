@@ -1,0 +1,1 @@
+C:\Program Files\nodejs\node.exe,C:\Users\Wamaitha\Documents\Thorium_Backend\Scripts\tests.js,CropTreatment,treatmentDate,d,areaTreated,s,applicationMode,s,diseaseMode,s,pestsTreated,s,harvestDate,d,-fk,Products

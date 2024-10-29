@@ -1,0 +1,1 @@
+C:\Program Files\nodejs\node.exe,C:\Users\Wamaitha\Documents\Thorium_Backend\Scripts\tests.js,cropSales,quantity,n,sellingPrice,s,date,d,soldTo,s,soldBy,s,salesArea,s
