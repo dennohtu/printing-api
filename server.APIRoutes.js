@@ -48,8 +48,6 @@ app.use(sanitiseInput);
 app.use("/api/user", serverImports.userRoutes);
 app.use("/api/product", serverImports.ProductRoutes);
 
-app.use("/api/Shipments", serverImports.ShipmentsRoutes);
-
 app.use("/api/lipanampesa", serverImports.LipaNaMpesaRoutes);
 app.use("/api/SendEmails", serverImports.SendEmailsRoutes);
 app.use("/api/ResetPassword", serverImports.ResetPasswordRoutes);

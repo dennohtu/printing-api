@@ -1,6 +1,5 @@
 import LipaNaMpesaModel from "../models/models.lipanampesa.js";
 import { secrets } from "../config/config.config.js";
-import request from "request";
 import axios from "axios";
 import Products_Order_Model from "../models/models.marketplace.order.js";
 import WalletPaymentModel from "../models/models.payment.wallet.js";
@@ -74,10 +73,7 @@ export const getTransaction = async (req, res) => {
   const id = req.params.id;
   const type = req.query.type;
 
-  if (type === "farm") {
-    const payment = await FarmPaymentModel.findById(id);
-    return res.send(payment);
-  } else if (type === "marketplace") {
+  if (type === "marketplace") {
     const payment = await OrderPaymentModel.findById(id);
     return res.send(payment);
   } else if (type === "wallet") {
@@ -93,19 +89,15 @@ export const getTransaction = async (req, res) => {
   } else {
     res.status(403).send({
       message:
-        "Incorrect type passed. Types allowed are: farm, marketplace, wallet and mpesa",
+        "Incorrect type passed. Types allowed are: marketplace, wallet and mpesa",
     });
   }
 };
 
 export const getAllTransactions = (req, res) => {
-  if (
-    req.query.category !== "farm" &&
-    req.query.category !== "marketplace" &&
-    req.query.category !== "wallet"
-  ) {
+  if (req.query.category !== "marketplace" && req.query.category !== "wallet") {
     return res.status(403).send({
-      message: "Category can only be one of 'farm', 'marketplace' or 'wallet'",
+      message: "Category can only be one of 'marketplace' or 'wallet'",
     });
   }
   const data = {
@@ -151,109 +143,4 @@ export const getAllTransactions = (req, res) => {
           error: err.message,
         });
     });
-};
-
-export const payment_callback = async (req, res) => {
-  console.log("-------Callback Enpoint hit---------");
-  const checkout_request_id = req.body.checkout_request_id;
-  const mpesaReference = req.body.mpesa_receipt_id;
-  console.log(checkout_request_id, mpesaReference);
-  if (!mpesaReference) {
-    console.log("No Mpesa Reference Provided. Not updating anything");
-    res.send("Processing complete. No update made");
-    return;
-  }
-  if (!checkout_request_id) {
-    console.log("No Checkout Request ID Provided. Not updating anything");
-    res.send("Processing complete. No update made");
-    return;
-  }
-  //find payment in farm
-  let payment = await FarmPaymentModel.findOne({
-    checkoutRequestId: checkout_request_id,
-  }).populate("Farm_ID");
-  //find payment in order
-  if (!payment) {
-    payment = await OrderPaymentModel.findOne({
-      checkoutRequestId: checkout_request_id,
-    });
-    if (!payment) {
-      //find payment in wallets
-      payment = await WalletPaymentModel.findOne({
-        checkoutRequestId: checkout_request_id,
-      });
-      if (!payment) {
-        console.log(
-          "No payment for the provided checkout request id found. Not updating"
-        );
-        console.log("............End of Callback.............");
-        res.send("Processing complete. No update made");
-        return;
-      }
-      const wallet = await UserWallet.findOne({ _id: payment.Wallet_ID });
-      const user = await User.findOne({ _id: wallet.User_ID });
-      const phone = payment.payment_phone;
-      sendSMS(
-        phone,
-        `Dear ${user.User_First_Name}, We have received and Successfully processed your payment of Kshs ${payment.amount}, deposit to personal wallet. Login to see your available balance. Thank you for your continued support.`
-      );
-      sendEmail(
-        "thoriumorganicfoods@gmail.com",
-        "New Wallet Deposit Confirmed",
-        `User ${user.User_First_Name} ${user.User_Last_Name} has deposited Kshs ${payment.amount} into their personal wallet`
-      );
-      await UserWalletTransaction.create({
-        Wallet_ID: payment.Wallet_ID,
-        Transaction_Type: "Deposit",
-        Amount_Transacted: payment.amount,
-      });
-    } else {
-      const phone = payment.payment_phone;
-      const order = await Products_Order_Model.findOne({
-        _id: payment.Order_ID,
-      });
-      const user = await User.findOne({ _id: order.User_ID });
-      sendSMS(
-        phone,
-        `Dear ${user.User_First_Name}, We have received and Successfully processed your payment of Kshs ${payment.amount}, payment for order #${payment.Order_ID}. Thank you for your continued support.`
-      );
-      sendEmail(
-        "thoriumorganicfoods@gmail.com",
-        "New Order Payment Confirmed",
-        `User ${user.User_First_Name} ${user.User_Last_Name} has paid Kshs ${payment.amount} for marketplace order #${payment.Order_ID}. The order is ready to be delivered.`
-      );
-      await Products_Order_Model.findOneAndUpdate(
-        { _id: payment.Order_ID },
-        { status: "COMPLETE" }
-      );
-    }
-  } else {
-    const phone = payment.payment_phone;
-    const farm = await Farm.findOne({ _id: payment.Farm_ID });
-    const user = await User.findOne({ _id: farm.User_ID });
-    sendSMS(
-      phone,
-      `Dear ${user.User_First_Name}, We have received and Successfully processed your payment of Kshs ${payment.amount}, subscription for the farm ${payment.Farm_ID.Farm_Name}. Thank you for your continued support`
-    );
-    sendEmail(
-      "thoriumorganicfoods@gmail.com",
-      "New Farm Subscription Payment Confirmed",
-      `User ${user.User_First_Name} ${user.User_Last_Name} has paid Kshs ${payment.amount} for farm subscription. The activated farm is ${farm.Farm_Name}.`
-    );
-    await Farm.findOneAndUpdate(
-      { _id: payment.Farm_ID },
-      {
-        isSubscriptionFeePaid: true,
-        Subscription_Expiry_Date: new Date(
-          new Date().setFullYear(new Date().getFullYear() + 1)
-        ).getTime(),
-      }
-    );
-  }
-  payment.Mpesa_ID = mpesaReference;
-  payment.status = "COMPLETE";
-  payment.save();
-  console.log(".............Callback transaction Successful..............");
-  console.log(".............Callback Procesing complete..............");
-  res.send("Processing Successful");
 };

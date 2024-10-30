@@ -1,25 +1,15 @@
 import mongoose from "mongoose";
-import DefaultPermissions from "../models/models.defaultPermissions.js";
-import FarmProfile from "../models/models.farm_employee.js";
-import Permissions from "../models/models.permissions.js";
 import RoleModel from "../models/models.roles.js";
 //models
 import UserModel from "../models/models.user.js";
-import FarmerEmployeeModel from "../models/models.farmer_employees.js";
 import cache from "memory-cache";
 import { checkPasswordValidity } from "../utils/utils.passwordValidation.js";
 import { generateToken } from "../utils/utils.generateJWTToken.js";
-import { secrets } from "../config/config.config.js";
 import { sendEmail } from "../utils/utils.sendEmails.js";
 import { sendOTP } from "../utils/utils.sendOTP.js";
-import { sendSMS } from "../utils/utils.sendSMS.js";
-//important utils for use
+
 import { validateEmail } from "../utils/utils.validateIsEmail.js";
 import { validatePhoneNumberFormate } from "../utils/utils.validateIsCorrectPhoneNumber.js";
-import FarmerEmployee from "../models/models.farmer_employees.js";
-import Institution from "../models/models.institution.js";
-import InstitutionMember from "../models/models.institutions.members.js";
-import FarmEpmloyee from "../models/models.farmEmployees.js";
 import User from "../models/models.user.js";
 import OrderPaymentModel from "../models/models.payment.order.js";
 
@@ -73,17 +63,7 @@ export const registerNewUser = async (req, res) => {
         const getDefaultRole = await RoleModel.findOne({ role_name: "admin" });
         // const userMod = JSON.parse(JSON.stringify(req.body))
         let getPermsForRole;
-        if (getRoleID.length === 0) {
-          req.body.User_Role_ID = getDefaultRole._id;
-          getDefaultRole = await DefaultPermissions.find({
-            User_Role_ID: getDefaultRole._id,
-          });
-        } else {
-          req.body.User_Role_ID = getRoleID[0]._id;
-          getPermsForRole = await DefaultPermissions.find({
-            Üser_Role_ID: getRoleID[0]?._id,
-          });
-        }
+
         // default permissions for the role
         const createNewUser = await UserModel.create(req.body);
 
@@ -538,12 +518,7 @@ export const deleteUserDetails = async (req, res) => {
   try {
     const userID = req.params.userID;
     const findUserID = await UserModel.findOne({ _id: userID });
-    if (findUserID) {
-      const farms = await FarmProfile.find({ User_ID: userID });
-      farms.forEach(async (farm) => {
-        await farm.remove();
-      });
-    }
+
     const response = await findUserID.remove();
     console.log(res);
     res.json({ message: "deleted successfully" });
