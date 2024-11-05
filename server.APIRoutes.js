@@ -57,4 +57,5 @@ app.use("/api/marketplace/orders", serverImports.MarketPlaceOrderRoutes);
 app.use("/api/user/wallet", serverImports.WalletTransactionRoutes);
 app.use("/api/banners", serverImports.BannerRoutes);
 app.use("/api/writeups", serverImports.WriteupRoutes);
+app.use("/api/category", serverImports.CategoryRoutes);
 export default app;

@@ -1,5 +1,20 @@
 //import model
+import UserRole from "../models/models.userroles.js";
 import RolesModel from "../models/models.roles.js";
+import User from "../models/models.user.js";
+
+//seed admin role to fresh db
+export const seedRoles = async () => {
+  const num = await RolesModel.find();
+  if (num.length === 0) {
+    const roles = {
+      role_name: "admin",
+      role_description: "Admin",
+    };
+
+    await RolesModel.create(roles);
+  }
+};
 
 // @desc create role details
 // @route api/role/createRole

@@ -2,12 +2,16 @@ import mongoose from "mongoose";
 
 const CategoryModel = mongoose.Schema(
   {
-    Name: {
+    Category_Name: {
       type: String,
       required: true,
       default: "",
     },
-    Description: {
+    Category_Description: {
+      type: String,
+      default: "",
+    },
+    Category_Banner: {
       type: String,
       default: "",
     },

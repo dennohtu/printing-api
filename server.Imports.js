@@ -11,6 +11,7 @@ import WalletTransactionRoutes from "./Routes/routes.user.wallet.transactions.js
 
 import BannerRoutes from "./Routes/routes.banner.js";
 import WriteupRoutes from "./Routes/routes.writeup.js";
+import CategoryRoutes from "./Routes/routes.category.js";
 
 //exports
 
@@ -26,4 +27,5 @@ export {
   BannerRoutes,
   WriteupRoutes,
   ProductRoutes,
+  CategoryRoutes,
 };

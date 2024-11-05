@@ -7,8 +7,14 @@ import { errorHandler } from "./middleware/middleware.errors.js";
 import { notFound } from "./middleware/middleware.notFound.js";
 import app from "./server.APIRoutes.js";
 import bodyParser from "body-parser";
+import { seedAdmin } from "./controllers/controllers.user.js";
+import { seedRoles } from "./controllers/controllers.roles.js";
 //connecting to db
-connectDB().then(() => console.log("DB CONNECTED"));
+connectDB().then(async () => {
+  await seedAdmin();
+  await seedRoles();
+  console.log("Database Connected");
+});
 
 //create the uploads folder if it doesnt exist
 const dir = "./uploads";

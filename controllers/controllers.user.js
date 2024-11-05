@@ -10,9 +10,23 @@ import { sendOTP } from "../utils/utils.sendOTP.js";
 
 import { validateEmail } from "../utils/utils.validateIsEmail.js";
 import { validatePhoneNumberFormate } from "../utils/utils.validateIsCorrectPhoneNumber.js";
-import User from "../models/models.user.js";
+
 import OrderPaymentModel from "../models/models.payment.order.js";
 
+//seed new admin user to fresh db
+export const seedAdmin = async () => {
+  let num = await UserModel.find();
+
+  if (num.length === 0) {
+    let usr = {
+      User_Phone: "254704534766",
+      User_Email: "dennismureithi10@gmail.com",
+      User_Password: "printing@1234",
+    };
+
+    await UserModel.create(usr);
+  }
+};
 // @desc Register new user by creating a new account
 // @route api/user/register
 // @access public
@@ -70,7 +84,6 @@ export const registerNewUser = async (req, res) => {
         //if user is a customer
         const token = generateToken(createNewUser._id);
 
-        createNewUser.Permission_ID = getPermsForRole[0]?._id;
         const newUser = await createNewUser.save();
         const updatedUser = JSON.parse(JSON.stringify(newUser));
         updatedUser["token"] = token;
@@ -214,13 +227,13 @@ export const loginUser = async (req, res) => {
       //check if phone or email exists on the db
       let existingUser;
       if (User_Phone) {
-        existingUser = await UserModel.findOne({ User_Phone })
-          .populate("User_Role_ID")
-          .populate("Permission_ID");
+        existingUser = await UserModel.findOne({ User_Phone }).populate(
+          "User_Role_ID"
+        );
       } else if (User_Email) {
-        existingUser = await UserModel.findOne({ User_Email })
-          .populate("User_Role_ID")
-          .populate("Permission_ID");
+        existingUser = await UserModel.findOne({ User_Email }).populate(
+          "User_Role_ID"
+        );
       }
 
       if (existingUser && (await existingUser.matchPassword(User_Password))) {
@@ -313,9 +326,7 @@ export const resetPassword = async (req, res) => {
     const foundUser = await UserModel.find({
       _id: req.params.userID,
       active: true,
-    })
-      .populate("User_Role_ID")
-      .populate("Permission_ID");
+    }).populate("User_Role_ID");
 
     if (foundUser.length > 0) {
       res.json(foundUser);
