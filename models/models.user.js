@@ -24,7 +24,19 @@ const userModelSchema = mongoose.Schema(
       unique: true,
       default: "",
     },
-    User_Gender: {
+    User_Address: {
+      type: String,
+      default: "",
+    },
+    User_Town: {
+      type: String,
+      default: "",
+    },
+    User_City: {
+      type: String,
+      default: "",
+    },
+    User_Country: {
       type: String,
       default: "",
     },
@@ -75,10 +87,6 @@ const userModelSchema = mongoose.Schema(
       type: String,
       default: "",
     },
-    User_KRA_Pin: {
-      type: String,
-      default: "",
-    },
 
     User_Accepted_Terms: {
       type: Boolean,
@@ -87,22 +95,6 @@ const userModelSchema = mongoose.Schema(
     User_Verified: {
       type: Boolean,
       default: false,
-    },
-    User_Thorium_Farmer: {
-      type: Boolean,
-      default: false,
-    },
-    User_Organic_Farmer: {
-      type: Boolean,
-      default: false,
-    },
-    User_Carbon_Credits: {
-      type: Number,
-      default: 0,
-    },
-    creator: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
     },
   },
   {

@@ -8,6 +8,8 @@ import {
   updateUserDetails,
   verifyUser,
   readOrderHistory,
+  registerClient,
+  getClientDetailsByEmail,
 } from "../controllers/controllers.user.js";
 
 import { AddLog } from "../middleware/middleware.logs.js";
@@ -25,6 +27,10 @@ router.route("/verifyToken").get(AddLog, verify);
 
 //create user
 router.route("/createUser").post(protect(["admin"]), AddLog, registerNewUser);
+
+router.route("/createClient").post(AddLog, registerClient);
+
+router.route("/getClientByEmail").get(AddLog, getClientDetailsByEmail);
 
 //read all users
 router

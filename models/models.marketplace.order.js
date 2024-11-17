@@ -2,42 +2,32 @@ import mongoose from "mongoose";
 
 const Product_Order = mongoose.Schema(
   {
-    Total_Cost: {
-      type: Number,
+    Order_ID: {
+      type: String,
       required: true,
-      default: 0,
     },
-    Products: [
-      {
-        Product_ID: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Marketplace_Products",
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          required: true,
-          default: 1,
-        },
-        Total_Cost: {
-          type: Number,
-          required: true,
-          default: 0,
-        },
-      },
-    ],
-    status: {
+    Status: {
       type: String,
       required: true,
       default: "PENDING",
     },
-    User_ID: {
+    Client: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Client",
+      required: true,
     },
     fulfilled: {
       type: Number,
       default: 0,
+    },
+    Product: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Marketplace_Products",
+    },
+    Quantity: {
+      type: Number,
+      required: true,
     },
     active: {
       type: Boolean,

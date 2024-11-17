@@ -6,43 +6,20 @@ import { AddLog } from "../middleware/middleware.logs.js";
 import { protect } from "../middleware/middleware.auth.js";
 import { checkPermission } from "../middleware/middleware.permissions.js";
 import {
-  addOrderItem,
+  addMarketPlaceOrderPayment,
   createMarketplaceOrder,
   deleteMarketplaceOrder,
   payWithWallet,
   readAllMarketplaceOrders,
   readMarketPlaceOrder,
   readPaidMarketplaceOrders,
-  removeMktPlaceProduct,
   updateMarketplaceOrder,
 } from "../controllers/controllers.marketplace.orders.js";
 
 router
   .route("/createOrder")
-  .post(
-    protect(["admin", "customer", "farmer", "institution", "farm_employee"]),
-    AddLog,
-    checkPermission,
-    createMarketplaceOrder
-  );
+  .post(AddLog, checkPermission, createMarketplaceOrder);
 
-router
-  .route("/addToOrder")
-  .post(
-    protect(["admin", "customer", "farmer", "institution", "farm_employee"]),
-    AddLog,
-    checkPermission,
-    addOrderItem
-  );
-
-router
-  .route("/removeFromOrder")
-  .post(
-    protect(["admin", "customer", "farmer", "institution", "farm_employee"]),
-    AddLog,
-    checkPermission,
-    removeMktPlaceProduct
-  );
 router.route("/readOrders/:orderID").get(AddLog, readMarketPlaceOrder);
 router.route("/readAllOrders").get(AddLog, readAllMarketplaceOrders);
 router
@@ -73,5 +50,9 @@ router
     protect(["admin", "institution", "farmer", "farm_employee", "customer"]),
     payWithWallet
   );
+
+router
+  .route("/pay")
+  .post(AddLog, protect(["admin"]), addMarketPlaceOrderPayment);
 
 export default router;

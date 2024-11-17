@@ -67,7 +67,7 @@ export const readAllMarketplaceProducts = async (req, res) => {
     if (MarketPlaceProductDetails.length > 0) {
       res.json(MarketPlaceProductDetails);
     } else {
-      res.status(204).send({
+      res.status(404).send({
         message: "No Marketplace Products records found",
       });
     }

@@ -1,9 +1,17 @@
+import Client from "../models/models.client.js";
 import Products_Order_Model from "../models/models.marketplace.order.js";
 import Products_Model from "../models/models.marketplace.product.js";
 import OrderPaymentModel from "../models/models.payment.order.js";
 import UserWallet from "../models/models.user.wallet.js";
 import UserWalletTransaction from "../models/models.user.wallet.transactionHistory.js";
 
+function randomString(length) {
+  let chars = "QWERTYUIOPLKJHGFDSAZXCVBNM1234567890";
+  var result = "";
+  for (var i = length; i > 0; --i)
+    result += chars[Math.floor(Math.random() * chars.length)];
+  return result;
+}
 // @desc create Marketplace Order
 // @method POST
 // @route  api/marketplace/createOrder
@@ -11,94 +19,29 @@ import UserWalletTransaction from "../models/models.user.wallet.transactionHisto
 
 export const createMarketplaceOrder = async (req, res) => {
   try {
-    const productId = req.body.Product_ID;
-    const qty = Number.parseInt(req.body.quantity);
-    const userId = req.body.User_ID;
-    const product = await Products_Model.findOne({
-      _id: productId,
-      active: true,
-    });
+    let data = req.body;
+    //check if a client exists with email provided
+    let user = await Client.findOne({ User_Email: data.client.User_Email });
+    if (!user) {
+      const client = new Client(data.client);
+      user = await client.save();
+    }
+    //create new order for the user
+    let product = await Products_Model.findOne({ _id: data.order.Product_ID });
     if (!product) {
-      res.status(403).send({
-        message: "No such product exists",
-      });
+      res.status(400).send("Invalid product");
       return;
     }
-    //check if an order exists for current user
-    const orderExists = await Products_Order_Model.findOne({
-      User_ID: userId,
-      status: "PENDING",
+    const order = new Products_Order_Model({
+      Client: user,
+      Product: product,
+      Quantity: data.order.quantity,
+      Order_ID: randomString(8),
     });
-    if (orderExists) {
-      const prodTotalCost = product.Product_Unit_Price * qty;
-      const order = {
-        Total_Cost: orderExists.Total_Cost + prodTotalCost,
-        User_ID: userId,
-      };
-      const prod = {
-        Product_ID: productId,
-        quantity: qty,
-        Total_Cost: prodTotalCost,
-      };
-      //check if product exists in list
-      const productExists = orderExists.Products.filter((p) =>
-        p.Product_ID.equals(productId)
-      );
-      console.log(productExists);
-      let createMarketplaceOrder;
-      if (productExists.length > 0) {
-        const newQty = qty + productExists[0].quantity;
-        const newTotalCost = newQty * product.Product_Unit_Price;
-        createMarketplaceOrder = await Products_Order_Model.findOneAndUpdate(
-          { _id: orderExists._id },
-          {
-            Total_Cost:
-              orderExists.Total_Cost -
-              productExists[0].Total_Cost +
-              newTotalCost,
-            User_ID: userId,
-          },
-          { new: true }
-        ).populate(["User_ID", "Products.Product_ID"]);
-        createMarketplaceOrder.Products.map((prod) => {
-          if (prod.Product_ID.equals(productId)) {
-            prod.Total_Cost = newTotalCost;
-            prod.quantity = newQty;
-          }
-          return;
-        });
-        createMarketplaceOrder.save();
-        res.json(createMarketplaceOrder);
-        return;
-      }
-      createMarketplaceOrder = await Products_Order_Model.findOneAndUpdate(
-        { _id: orderExists._id },
-        order,
-        { new: true }
-      );
-      createMarketplaceOrder.Products.push(prod);
-      await createMarketplaceOrder.save();
-      await createMarketplaceOrder.populate(["User_ID", "Products.Product_ID"]);
-      res.json(createMarketplaceOrder);
-      return;
-    }
 
-    const prodTotalCost = product.Product_Unit_Price * qty;
-    const order = {
-      Total_Cost: prodTotalCost,
-      User_ID: userId,
-      status: "PENDING",
-    };
-    const prod = {
-      Product_ID: productId,
-      quantity: qty,
-      Total_Cost: prodTotalCost,
-    };
-    const createMarketplaceOrder = await Products_Order_Model.create(order);
-    createMarketplaceOrder.Products.push(prod);
-    await createMarketplaceOrder.save();
-    await createMarketplaceOrder.populate(["User_ID", "Products.Product_ID"]);
-    res.json(createMarketplaceOrder);
+    let newOrder = await order.save();
+
+    res.send("Order " + newOrder.Order_ID + " created successfully");
   } catch (e) {
     console.error("Error while trying to create Marketplace Order", e);
 
@@ -106,86 +49,6 @@ export const createMarketplaceOrder = async (req, res) => {
       message:
         "Something went wrong while trying to createMarketplace Order. Contact admin",
       error: e,
-    });
-  }
-};
-
-// @desc add to Marketplace Order
-// @method POST
-// @route  api/marketplace/addToOrder
-// @access private
-export const addOrderItem = async (req, res) => {
-  try {
-    const orderId = req.body.Order_ID;
-    const productId = req.body.Product_ID;
-    const qty = Number.parseInt(req.body.quantity);
-    const product = await Products_Model.findOne({
-      _id: productId,
-      active: true,
-    });
-    if (!product) {
-      res.status(403).send({
-        message: "No such product exists",
-      });
-      return;
-    }
-    const order = await Products_Order_Model.findOne({
-      _id: orderId,
-      active: true,
-    });
-    if (!order) {
-      res.status(403).send({
-        message: "No such order exists",
-      });
-      return;
-    }
-
-    const exists = order.Products.filter((ob) =>
-      ob.Product_ID.equals(productId)
-    );
-    let updateMarketplaceOrder;
-    let newTotal;
-    let newQty;
-    if (exists.length > 0) {
-      newQty = exists[0].quantity + qty;
-      newTotal = product.Product_Unit_Price * newQty;
-      const ordernew = {
-        Total_Cost: order.Total_Cost - exists[0].Total_Cost + newTotal,
-      };
-      updateMarketplaceOrder = await Products_Order_Model.findOneAndUpdate(
-        { _id: orderId, active: true },
-        ordernew,
-        { new: true }
-      ).populate("Products.Product_ID");
-    } else {
-      newTotal = product.Product_Unit_Price * qty;
-      newQty = qty;
-      const ordernew = {
-        Total_Cost: order.Total_Cost + prodTotalCost,
-      };
-      updateMarketplaceOrder = await Products_Order_Model.findOneAndUpdate(
-        { _id: orderId, active: true },
-        ordernew,
-        { new: true }
-      ).populate("Products.Product_ID");
-    }
-
-    updateMarketplaceOrder.Products.map((prod) => {
-      if (prod.Product_ID.equals(productId)) {
-        prod.Total_Cost = newTotal;
-        prod.quantity = newQty;
-      }
-    });
-
-    updateMarketplaceOrder.save();
-    res.json(updateMarketplaceOrder);
-  } catch (e) {
-    console.error("Error while trying to update  Marketplace Order", e);
-
-    res.status(503).send({
-      message:
-        "Something went wrong while trying to update Marketplace Order. Contact admin",
-      error: e.message,
     });
   }
 };
@@ -200,8 +63,8 @@ export const readMarketPlaceOrder = async (req, res) => {
     const MarketPlaceOrderRecords = await Products_Order_Model.findOne({
       _id: req.params.orderID,
     })
-      .populate("User_ID")
-      .populate("Products.Product_ID");
+      .populate("Client")
+      .populate("Product");
 
     if (MarketPlaceOrderRecords) {
       res.json(MarketPlaceOrderRecords);
@@ -234,8 +97,8 @@ export const readAllMarketplaceOrders = async (req, res) => {
       ...queryList,
       active: true,
     })
-      .populate("User_ID")
-      .populate("Products.Product_ID");
+      .populate("Client")
+      .populate("Product");
 
     if (MarketPlaceOrderDetails.length > 0) {
       res.json(MarketPlaceOrderDetails);
@@ -250,107 +113,6 @@ export const readAllMarketplaceOrders = async (req, res) => {
     res.status(503).send({
       message:
         "Something went wrong while trying to read Marketplace Order records. Contact admin",
-      error: e.message,
-    });
-  }
-};
-
-// @desc remove from Marketplace order
-// @method PUT
-// @route api/Marketplace/removeFromOrder
-// @access private
-
-export const removeMktPlaceProduct = async (req, res) => {
-  try {
-    const productId = req.body.Product_ID;
-    const orderId = req.body.Order_ID;
-
-    const product = await Products_Model.findOne({
-      _id: productId,
-      active: true,
-    });
-
-    if (!product) {
-      res.status(403).send({
-        message: "Order with provided ID not found",
-      });
-      return;
-    }
-
-    const order = await Products_Order_Model.findOne({
-      _id: orderId,
-      active: true,
-    });
-
-    if (!order) {
-      res.status(403).send({
-        message: "No such order exists",
-      });
-      return;
-    }
-
-    //pop item from array
-    const item = order.Products.filter((ob) => ob.Product_ID.equals(productId));
-    if (item.length === 0) {
-      res.status(403).send({
-        message: "Product is not part of this order",
-      });
-      return;
-    }
-
-    //decrement total order cost
-    const newTotal = order.Total_Cost - item[0].Product_ID.Product_Unit_Price;
-    const updatedOrderCost = {
-      Total_Cost: newTotal,
-    };
-
-    //save
-    const prod = await Products_Order_Model.findOneAndUpdate(
-      { _id: orderId },
-      updatedOrderCost,
-      {
-        new: true,
-      }
-    );
-
-    prod.Products.map(async (product) => {
-      if (product.Product_ID.equals(productId)) {
-        const index = prod.Products.findIndex((p) =>
-          p.Product_ID.equals(productId)
-        );
-        if (index === -1) {
-          await Products_Order_Model.findOneAndUpdate(
-            { _id: orderId },
-            { Total_Cost: order.Total_Cost }
-          ).populate(["User_ID", "Products.Product_ID"]);
-        } else {
-          //decrement quantity & total_cost per product
-          if (prod.Products[index].quantity > 1) {
-            prod.Products[index].quantity--;
-            const updateTotalCost =
-              prod.Products[index].Total_Cost -
-              prod.Products[index].Product_ID.Product_Unit_Price;
-            prod.Products[index].Total_Cost = updateTotalCost;
-          } else {
-            prod.Products.splice(index, 1);
-          }
-
-          console.log(prod);
-          prod.save();
-        }
-      }
-      return;
-    });
-    res.json(prod);
-  } catch (e) {
-    console.error(
-      "Error while trying to update marketplace product details",
-      e
-    );
-
-    res.status(503).send({
-      message:
-        "Something went wrong while trying to update the marketplace product record. Contact admin",
       error: e.message,
     });
   }
@@ -409,21 +171,18 @@ export const deleteMarketplaceOrder = async (req, res) => {
 export const readPaidMarketplaceOrders = async (req, res) => {
   try {
     const orders = await OrderPaymentModel.find({
-      status: "COMPLETE",
       active: true,
-    })
-      .populate("Wallet_Transaction_ID")
-      .populate({
-        path: "Order_ID",
+    }).populate({
+      path: "Order_ID",
+      populate: {
+        path: "Product",
+        model: "Marketplace_Products",
         populate: {
-          path: "Products.Product_ID",
-          model: "Marketplace_Products",
-          populate: {
-            path: "Category_ID",
-            model: "Categories",
-          },
+          path: "Category_ID",
+          model: "Categories",
         },
-      });
+      },
+    });
 
     if (orders.length === 0) {
       res.status(403).send({
@@ -436,6 +195,39 @@ export const readPaidMarketplaceOrders = async (req, res) => {
     console.error(err);
     res.status(500).send({
       message: "An error occured while processing your request",
+      error: err.message,
+    });
+  }
+};
+
+export const addMarketPlaceOrderPayment = async (req, res) => {
+  try {
+    let data = req.body;
+    //order exists
+    let order = await Products_Order_Model.findOne({ _id: data.Order_ID });
+    if (!order) {
+      res.status(400).send("Invalid Order Id");
+      return;
+    }
+    //amount > 0
+    if (data.Amount_Paid <= 0) {
+      res.status(400).send("Amount to be paid must be greater than 0");
+      return;
+    }
+    let payment = new OrderPaymentModel({
+      ...data,
+      Payment_ID: randomString(8),
+    });
+    let savedPayment = await payment.save();
+
+    res.send(
+      "Payment with reference #" +
+        savedPayment.Payment_ID +
+        " saved successfully"
+    );
+  } catch (err) {
+    res.status(503).send({
+      message: "An error occured when processing your request",
       error: err.message,
     });
   }

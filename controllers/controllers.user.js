@@ -12,6 +12,7 @@ import { validateEmail } from "../utils/utils.validateIsEmail.js";
 import { validatePhoneNumberFormate } from "../utils/utils.validateIsCorrectPhoneNumber.js";
 
 import OrderPaymentModel from "../models/models.payment.order.js";
+import Client from "../models/models.client.js";
 
 //seed new admin user to fresh db
 export const seedAdmin = async () => {
@@ -122,6 +123,49 @@ export const registerNewUser = async (req, res) => {
         "Something went wrong while trying to register you.Contact admin.",
       error: error.message,
     });
+  }
+};
+
+export const registerClient = async (req, res) => {
+  let client = req.body;
+
+  //1. check if email exists
+  let clientExists = await Client.findOne(
+    (x) => x.User_Email === client.User_Email
+  );
+
+  if (clientExists) {
+    clientExists.User_Address = client.User_Address;
+    clientExists.User_Town = client.User_Town;
+    clientExists.User_City = client.User_City;
+    clientExists.User_Country = client.User_Country;
+
+    await clientExists.save();
+  } else {
+    await Client.create(client);
+  }
+
+  res.send("Client Details saved successfully");
+};
+
+export const getClientDetailsByEmail = async (req, res) => {
+  let email = req.query.email;
+  let clientExists = await Client.findOne(
+    (x) => x.User_Email === email && active === true
+  );
+  if (clientExists) {
+    res.send({
+      User_Last_Name: clientExists.User_Last_Name,
+      User_First_Name: clientExists.User_First_Name,
+      User_Email: clientExists.User_Email,
+      User_Phone: clientExists.User_Phone,
+      User_Address: clientExists.User_Address,
+      User_Town: clientExists.User_Town,
+      User_City: clientExists.User_City,
+      User_Country: clientExists.User_Country,
+    });
+  } else {
+    res.status(404).send("User does not exist");
   }
 };
 

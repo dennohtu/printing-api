@@ -2,29 +2,25 @@ import mongoose from "mongoose";
 
 const Order_payment_schema = mongoose.Schema(
   {
+    Payment_ID: {
+      type: String,
+      required: true,
+    },
     Order_ID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Marketplace_Order",
     },
-    Mpesa_ID: {
+    Transaction_Reference: {
       type: String,
-      ref: "",
+      default: "CASH",
     },
-    Wallet_Transaction_ID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "UserWalletTransactionHistory",
-    },
-    amount: {
+    Amount_Paid: {
       type: Number,
       default: 0,
     },
-    payment_phone: {
-      type: String,
-      default: "",
-    },
-    checkoutRequestId: {
-      type: String,
-      default: "",
+    Balance: {
+      type: Number,
+      default: 0,
     },
     status: {
       type: String,
